@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3:*)",
+      "Bash(.venv/bin/pip install:*)",
+      "Bash(.venv/bin/python -m src.main 2>&1)",
+      "Bash(pkill:*)",
+      "Read(//tmp/**)",
+      "Bash(jobs)",
+      "Bash(.venv/bin/python -m src.main 2>&1; echo \"EXIT: $?\")",
+      "Bash(ls:*)"
+    ]
+  }
+}
