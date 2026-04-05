@@ -61,21 +61,23 @@ Your tasks:
    - High score: affects many people, major political/economic/crisis event, covered by multiple sources
    - Low score: entertainment, minor local news, ads, reposts of old news
 4. Return ONLY the top {top_n} most important news items.
-5. Output a valid JSON array (no markdown, no explanation), each element matching the schema above.
+5. Output a valid JSON object with a single key "news" containing the array (no markdown, no explanation).
 
 Messages:
 {json.dumps(messages_payload, ensure_ascii=False, indent=2)}
 
 Return format (example):
-[
-  {{
-    "title": "Заголовок новости",
-    "summary": "Краткое описание события в 2-3 предложениях.",
-    "importance_score": 8.5,
-    "source_count": 3,
-    "message_ids": [42, 57, 103]
-  }}
-]"""
+{{
+  "news": [
+    {{
+      "title": "Заголовок новости",
+      "summary": "Краткое описание события в 2-3 предложениях.",
+      "importance_score": 8.5,
+      "source_count": 3,
+      "message_ids": [42, 57, 103]
+    }}
+  ]
+}}"""
 
     try:
         response = await client.chat.completions.create(
@@ -88,16 +90,15 @@ Return format (example):
 
         raw_json = response.choices[0].message.content or "{}"
 
-        # OpenAI with json_object may wrap in a key — handle both cases
         parsed = json.loads(raw_json)
         if isinstance(parsed, dict):
-            # Find the list inside
-            for v in parsed.values():
-                if isinstance(v, list):
-                    parsed = v
-                    break
+            # Extract from "news" key first, then fall back to any list value
+            if "news" in parsed and isinstance(parsed["news"], list):
+                parsed = parsed["news"]
             else:
-                parsed = []
+                parsed = next((v for v in parsed.values() if isinstance(v, list)), [])
+        elif not isinstance(parsed, list):
+            parsed = []
 
         news_items: list[NewsItem] = []
         for item in parsed:

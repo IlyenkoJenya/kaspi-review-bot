@@ -8,7 +8,12 @@
       "Read(//tmp/**)",
       "Bash(jobs)",
       "Bash(.venv/bin/python -m src.main 2>&1; echo \"EXIT: $?\")",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(git remote:*)",
+      "Bash(git push:*)",
+      "Bash(.venv/bin/python3 -c \"\nfrom src.config import config\nprint\\('openai_model:', config.openai_model\\)\nprint\\('timezone:', config.timezone\\)\n\" 2>&1)",
+      "Bash(python -m src.main)",
+      "Bash(pip3 install:*)"
     ]
   }
 }
